@@ -4,19 +4,58 @@ import "../static/css/style.css"
 
 export default class CourseList extends React.Component {
 
+
   constructor(props) {
     super(props);
 
-    this.state = {
+      this.state = {
 
-      // Array of items featured in list
-      items: []
-    };
+          // Array of items featured in list
+          items: []
+      };
+
+
+
+
+
+    /*
+      this.firebaseRef.on('value', dataSnapshot => {
+          let items = [];
+          dataSnapshot.forEach(childSnapshot => {
+              let val = childSnapshot.val();
+              items['.key'] = childSnapshot.key;
+              items.push(val)
+          });
+          this.setState(items);
+
+      });
+      */
+
 
     this.addItem = this.addItem.bind(this);
     this.deleteItem = this.deleteItem.bind(this);
   }
 
+    componentDidMount(){
+        this.firebaseRef = this.props.db.database().ref("Courses");
+
+
+        this.firebaseRef.on('value', (snapshot) => {
+            let items = {};
+            let val = snapshot.val();
+            for(let tempVal in val) {
+                items[tempVal] = {
+                    "Hours": val[tempVal]
+                }
+            }
+            this.setState(
+                {val: items}
+            )
+            }
+
+
+        )
+    }
 
   /**
    * Gets the number of hours a week a course takes on average
@@ -24,7 +63,19 @@ export default class CourseList extends React.Component {
    * @return {int} Number of hours course is expected to take, or placeholder
    */
   getNumHours(course, quarter) {
-    return 2;
+    console.log("Hello world", quarter)
+      console.log(this.state.val)
+      //console.log(this.state.val[course]['Hours'][quarter + "17"])
+    if(this.state.val[course] != null &&
+        this.state.val[course]['Hours'] != null &&
+        this.state.val[course]['Hours'][quarter + "17"] != null) {
+
+        console.log("Hello world");
+        let value = parseFloat(this.state.val[course]['Hours'][quarter + "17"].replace("．" ,"."));
+        return value;
+    } else {
+        return 1;
+    }
   }
 
   /**
@@ -61,7 +112,7 @@ export default class CourseList extends React.Component {
       };
 
       // Adjust the total number of hours per week
-      this.props.timeChangeCallback(this.getNumHours(this._inputElement.value),
+      this.props.timeChangeCallback(this.getNumHours(this._inputElement.value, this.props.qt),
           this.props.qt);
 
       this.setState((prevState) => {

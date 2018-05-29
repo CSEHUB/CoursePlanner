@@ -1,5 +1,6 @@
 import React from 'react'
 import CourseList from './CourseList';
+import firebase from "firebase";
 
 export default class Quarter extends React.Component {
 
@@ -31,7 +32,7 @@ export default class Quarter extends React.Component {
         </tr>
         <tr>
           <CourseList qt={this.props.qt}
-              timeChangeCallback={this.hoursCallback} />
+              timeChangeCallback={this.hoursCallback} db={this.props.db} />
         </tr>
       </div>
     );
