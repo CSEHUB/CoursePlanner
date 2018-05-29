@@ -8,33 +8,15 @@ export default class CourseList extends React.Component {
   constructor(props) {
     super(props);
 
+
       this.state = {
 
           // Array of items featured in list
           items: []
       };
-
-
-
-
-
-    /*
-      this.firebaseRef.on('value', dataSnapshot => {
-          let items = [];
-          dataSnapshot.forEach(childSnapshot => {
-              let val = childSnapshot.val();
-              items['.key'] = childSnapshot.key;
-              items.push(val)
-          });
-          this.setState(items);
-
-      });
-      */
-
-
     this.addItem = this.addItem.bind(this);
     this.deleteItem = this.deleteItem.bind(this);
-  }
+
 
     componentDidMount(){
         this.firebaseRef = this.props.db.database().ref("Courses");
@@ -58,10 +40,10 @@ export default class CourseList extends React.Component {
     }
 
   /**
-   * Gets the number of hours a week a course takes on average
+   * Adds to the number of hours a week a course takes on average
    * @param  {string} course The name of the course
-   * @return {int} Number of hours course is expected to take, or placeholder
    */
+
   getNumHours(course, quarter) {
     console.log("Hello world", quarter)
       console.log(this.state.val)
@@ -77,6 +59,12 @@ export default class CourseList extends React.Component {
         return 1;
     }
   }
+
+  subNumHours(course) {
+    this.props.timeChangeCallback(-2);
+  }
+
+
 
   /**
    * Checks if course is typically offered the quarter stated
@@ -112,8 +100,10 @@ export default class CourseList extends React.Component {
       };
 
       // Adjust the total number of hours per week
+
       this.props.timeChangeCallback(this.getNumHours(this._inputElement.value, this.props.qt),
           this.props.qt);
+
 
       this.setState((prevState) => {
         return {
@@ -132,7 +122,10 @@ export default class CourseList extends React.Component {
   deleteItem(key) {
 
     // Subtract from hours per week workload
-    this.props.timeChangeCallback(-1 * this.getNumHours(this._inputElement.value));
+    //this.props.timeChangeCallback(-1 *
+        //this.getNumHours(this._inputElement.value));
+    this.subNumHours(this._inputElement.value);
+
 
     var filteredItems = this.state.items.filter(function (item) {
       return (item.key !== key);
@@ -141,6 +134,20 @@ export default class CourseList extends React.Component {
     this.setState({
       items: filteredItems
     });
+  }
+
+
+  componentDidUpdate() {
+    localStorage.setItem(this.props.yr.concat(this.props.qt).concat("cl"), JSON.stringify(this.state));
+  }
+
+  componentDidMount() {
+    const data = localStorage.getItem(this.props.yr.concat(this.props.qt).concat("cl"))
+    if(data) {
+      this.setState(prevState => {
+        return JSON.parse(data)
+      })
+    }
   }
 
   render() {

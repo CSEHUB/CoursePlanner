@@ -21,10 +21,12 @@ export default class FourYearPlan extends React.Component {
   render() {
     return(
       <div id="fullWidget">
+
         <OneYearPlan db={firebase}/>
         <OneYearPlan db={firebase}/>
         <OneYearPlan db={firebase}/>
         <OneYearPlan db={firebase}/>
+
       </div>
     );
   }
